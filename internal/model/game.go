@@ -23,7 +23,6 @@ func NewGame(ctx context.Context, db *sqlx.DB, game Game) (*Game, error) {
 values ($1, $2, $3)
 
 returning json_build_object(
-        'game_id', game_id,
         'name', name,
         'description', description,
         'short_name', short_name,
@@ -83,7 +82,7 @@ where short_name = $1`
 func GameInfo(ctx context.Context, db *sqlx.DB, shortName string) (interface{}, error) {
 	var err error
 	q := `select json_build_object(
-               'game', json_build_object('id', game.game_id, 'name', game.name, 'short_name', game.short_name),
+               'game', json_build_object('id', game.game_id, 'name', game.name, 'short_name', game.short_name, 'description', game.description),
                'tasks', array(select json_build_object(
                                              'id', task_id,
                                              'title', task.title,

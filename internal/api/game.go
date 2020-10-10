@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
+	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/mtreload/zh/internal/model"
@@ -30,6 +32,11 @@ func (s *Server) CreateGame(w http.ResponseWriter, r *http.Request) {
 		render.DefaultResponder(w, r, err)
 		return
 	}
+
+	if game.Name == "" {
+		render.DefaultResponder(w, r, "empty name")
+	}
+	game.ShortName = strings.Replace(uuid.New().String(), "-", "", -1)[:6]
 
 	game, err = model.NewGame(r.Context(), s.DB, *game)
 	if err != nil {

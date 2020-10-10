@@ -10,6 +10,7 @@ import (
 	_ "github.com/lib/pq"
 
 	"github.com/go-chi/chi"
+	"github.com/go-chi/cors"
 
 	"github.com/mtreload/zh/internal/api"
 	"github.com/mtreload/zh/pkg/config"
@@ -40,6 +41,11 @@ func main() {
 	s := api.Server{DB: db}
 
 	r := chi.NewRouter()
+	r.Use(cors.New(cors.Options{
+		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{http.MethodPost, http.MethodGet, http.MethodHead, http.MethodPatch, http.MethodPut},
+	}).Handler)
+
 	r.Route("/api", func(r chi.Router) {
 		r.Post("/game", s.CreateGame)
 		r.Get("/game/{gameSN}", s.GetGame)

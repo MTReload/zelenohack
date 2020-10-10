@@ -21,14 +21,24 @@ func NewGame(ctx context.Context, db *sqlx.DB, game Game) (*Game, error) {
 	var err error
 	q := `insert into game (name, description, short_name)
 values ($1, $2, $3)
+
 returning json_build_object(
         'game_id', game_id,
         'name', name,
         'description', description,
-        'short_name', short_name);`
+        'short_name', short_name,
+    'id', game_id);`
 
 	var ret Game
-	err = db.QueryRowxContext(ctx, q, game.Name, game.Description, game.ShortName).Scan(&ret)
+	var b []byte
+
+	err = db.QueryRowxContext(ctx, q, game.Name, game.Description, game.ShortName).Scan(&b)
+	if err != nil {
+		fmt.Printf("%s: can't add new game\n", err.Error())
+		return nil, err
+	}
+
+	err = json.Unmarshal(b, &ret)
 	if err != nil {
 		fmt.Printf("%s: can't add new game\n", err.Error())
 		return nil, err

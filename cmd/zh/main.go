@@ -48,6 +48,9 @@ func main() {
 		r.Get("/game/{gameSN}/info/{playerName}", s.GetPersonalGameInfo)
 
 		r.Post("/game/{gameSN}/player/{playerName}/task/complete", s.CompleteTask)
+
+		r.Post("/game/{gameSN}/tasks", s.CreateTasks)
+
 		// r.Post("/player/{gameSN}")
 	})
 

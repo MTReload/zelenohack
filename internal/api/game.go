@@ -53,7 +53,10 @@ func (s *Server) GetGame(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.DefaultResponder(w, r, *game)
+	if game != nil {
+		render.DefaultResponder(w, r, *game)
+	}
+
 }
 
 func (s *Server) GetGameInfo(w http.ResponseWriter, r *http.Request) {

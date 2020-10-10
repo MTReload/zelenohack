@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.1/mapsjs-ui.css"/>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-core.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-service.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-ui.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
+    <script src='https://developer.here.com/javascript/src/iframeheight.js'></script>
+
+    <title>Квест-Карта</title>
+</head>
+<body>
+
+<div style="width: 640px; height: 480px" id="map"></div>
+<script>
+    /**
+     * Moves the map to display over Berlin
+     *
+     * @param  {H.Map} map      A HERE Map instance within the application
+     */
+    function moveMapToBerlin(map) {
+        map.setCenter({lat: 52.5159, lng: 13.3777});
+        map.setZoom(14);
+    }
+
+    /**
+     * Boilerplate map initialization code starts below:
+     */
+
+//Step 1: initialize communication with the platform
+// In your own code, replace variable window.apikey with your own apikey
+    var platform = new H.service.Platform({
+        apikey: "SJw-7_AV2XKhKZncs1-pMOIXcyT_T7B_roQOeErHAlU"
+    });
+    var defaultLayers = platform.createDefaultLayers();
+
+    //Step 2: initialize a map - this map is centered over Europe
+    var map = new H.Map(document.getElementById('map'),
+        defaultLayers.vector.normal.map, {
+            center: {lat: 50, lng: 5},
+            zoom: 4,
+            pixelRatio: window.devicePixelRatio || 1
+        });
+    // add a resize listener to make sure that the map occupies the whole container
+    window.addEventListener('resize', () => map.getViewPort().resize());
+
+    //Step 3: make the map interactive
+    // MapEvents enables the event system
+    // Behavior implements default interactions for pan/zoom (also on mobile touch environments)
+    var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+
+    // Create the default UI components
+    var ui = H.ui.UI.createDefault(map, defaultLayers);
+
+    // Now use the map as required...
+    window.onload = function () {
+        moveMapToBerlin(map);
+    }
+
+    function setUpClickListener(map) {
+        // Attach an event listener to map display
+        // obtain the coordinates and display in an alert box.
+        map.addEventListener('tap', function (evt) {
+            var coord = map.screenToGeo(evt.currentPointer.viewportX,
+                evt.currentPointer.viewportY);
+            logEvent('Clicked at ' + Math.abs(coord.lat.toFixed(4)) +
+                ((coord.lat > 0) ? 'N' : 'S') +
+                ' ' + Math.abs(coord.lng.toFixed(4)) +
+                ((coord.lng > 0) ? 'E' : 'W'));
+        });
+    }
+
+</script>
+<div id="app">
+
+    {{ message }}
+    <player-item
+            v-for="player in current_game.players"
+            v-bind:tasks="current_game.tasks"
+            v-bind:player="player"
+            v-bind:key="player.id"
+    ></player-item>
+
+    <task-item
+            v-for="task in current_game.tasks"
+            v-bind:task="task"
+            v-bind:key="task.id"
+    ></task-item>
+
+    <div>
+        AAAAAAA
+        <task-item
+                v-for="task in tasks">
+            v-bind:task="task"
+        </task-item>
+    </div>
+
+
+</div>
+
+
+</body>
+<script src="main.js"></script>
+</html>

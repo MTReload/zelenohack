@@ -76,12 +76,17 @@ func (s *Server) GetPersonalGameInfo(w http.ResponseWriter, r *http.Request) {
 	gameSN := chi.URLParam(r, "gameSN")
 	playerName := chi.URLParam(r, "playerName")
 
-	game, err := model.GetGameInfoForPlayer(r.Context(), s.DB, gameSN, playerName)
+	gameInfo, err := model.GetGameInfoForPlayer(r.Context(), s.DB, gameSN, playerName)
 	if err != nil {
 		log.WithError(err).Error("can't get personal game info")
 		render.DefaultResponder(w, r, err)
 		return
 	}
 
-	render.DefaultResponder(w, r, game)
+	// crating new player
+	if gameInfo == nil {
+		gameInfo, err = model.NewPlayer(r.Context(), s.DB, playerName, gameSN)
+	}
+
+	render.DefaultResponder(w, r, gameInfo)
 }

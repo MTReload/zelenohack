@@ -44,6 +44,7 @@ func main() {
 		r.Post("/game", s.CreateGame)
 		r.Get("/game/{gameSN}", s.GetGame)
 		r.Get("/game/{gameSN}/info", s.GetGameInfo)
+		// also creates new player
 		r.Get("/game/{gameSN}/info/{playerName}", s.GetPersonalGameInfo)
 
 		// r.Post("/player/{gameSN}")

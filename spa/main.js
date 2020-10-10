@@ -3,8 +3,9 @@ var app = new Vue({
     data() {
         return {
             message: 'Привет, Vue!',
-            current_game: null,
+            current_game: {players: [], tasks: []},
             tasks: [],
+            labels: [],
             current_task_idx: -1,
             gameSN: '',
             editMode: false,
@@ -33,6 +34,12 @@ Vue.component('task-item', {
 
 Vue.component('task-item-editable', {
     props: ['task', 'idx'],
+    data: function () {
+        return {
+            title: '',
+            description: ''
+        }
+    },
     methods: {
         onClick: function () {
             changeActiveTask(this.idx);
@@ -45,6 +52,8 @@ Vue.component('task-item-editable', {
     template: `
 <li>
     <div style="height: 20px" v-on:click="onClick">Title: {{ task.title }} x: {{ task.coords.x}} y: {{ task.coords.y}}</div>
+    <input v-model="task.title" placeholder="title">
+    <input v-model="task.description" placeholder="description">
     <button v-on:click="this.remove">X</button>
 </li>
 `
@@ -100,9 +109,15 @@ function setUpClickListener(map) {
             evt.currentPointer.viewportY);
         let x = Math.abs(coord.lat.toFixed(8));
         let y = Math.abs(coord.lng.toFixed(8));
-        let tsk = {title: "a", coords: {x: x, y: y}}
+        var tsk = {title: "a", coords: {x: x, y: y}}
+
+        tsk.html = function () {
+            `<task-item v-bind:task="tsk"></task-item>`
+        }
+
         addTask(tsk)
 
+        addInfoBubble(map, x, y, tsk)
     });
 }
 
@@ -141,3 +156,39 @@ adminMode = function () {
             // always executed
         });
 }
+
+startQuest = function () {
+    axios.post('http://localhost:8080/api/game/' + app.gameSN + '/tasks', {
+        tasks: app.tasks
+    }).then(function (response) {
+        adminMode()
+    }).catch(function (error) {
+        console.log(error)
+    })
+}
+
+function addMarkerToGroup(group, coordinate, data) {
+    var marker = new H.map.Marker(coordinate);
+    // add custom data to the marker
+    marker.setData(data);
+    group.addObject(marker);
+}
+
+function addInfoBubble(map, lat, lng, data) {
+    // add 'tap' event listener, that opens info bubble, to the group
+    group.addEventListener('tap', function (evt) {
+        // event target is the marker itself, group is a parent event target
+        // for all objects that it contains
+        var bubble = new H.ui.InfoBubble(evt.target.getGeometry(), {
+            // read custom data
+            content: evt.target.getData().html()
+        });
+        // show info bubble
+        ui.addBubble(bubble);
+    }, false);
+
+    addMarkerToGroup(group, {lat: lat, lng: lng}, data);
+
+}
+
+addInfoBubble(map);

@@ -20,9 +20,10 @@
 <body>
 
 <div class="container-sm">
-    <div class="row mt-5">
+    <div class="row mt-5" >
+
         <div style="width: 640px; height: 480px" id="map" class="col-8"></div>
-        <div id="app" class="col-4">
+        <div  class="col-4" id="app">
             <div v-if="editMode || adminMode">
                 <h1>Code: {{ gameSN }}</h1>
                 <h2>Name: {{ game_name}}</h2>
@@ -30,12 +31,6 @@
             </div>
 
             <div v-if="editMode">
-                <player-item
-                        v-for="player in current_game.players"
-                        v-bind:tasks="current_game.tasks"
-                        v-bind:player="player"
-                        v-bind:key="player.id"
-                ></player-item>
 
                 <task-item
                         v-for="task in current_game.tasks"
@@ -53,6 +48,7 @@
                     </task-item-editable>
                 </div>
                 <button onclick="removeLastTask()">drop last</button>
+                <button onclick="startQuest()">Start</button>
 
             </div>
 
@@ -131,18 +127,8 @@
         moveMapToBerlin(map);
     }
 
-    function setUpClickListener(map) {
-        // Attach an event listener to map display
-        // obtain the coordinates and display in an alert box.
-        map.addEventListener('tap', function (evt) {
-            var coord = map.screenToGeo(evt.currentPointer.viewportX,
-                evt.currentPointer.viewportY);
-            logEvent('Clicked at ' + Math.abs(coord.lat.toFixed(4)) +
-                ((coord.lat > 0) ? 'N' : 'S') +
-                ' ' + Math.abs(coord.lng.toFixed(4)) +
-                ((coord.lng > 0) ? 'E' : 'W'));
-        });
-    }
+    var group = new H.map.Group();
+    map.addObject(group);
 
 </script>
 </body>

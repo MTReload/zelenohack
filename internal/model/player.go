@@ -25,22 +25,14 @@ returning json_build_object(
         'name', name
     )`
 
-	qInitPlayerOnGame := `insert into player_game (player_id, game_id) (select player_id, game_id
-                                              from player,
-                                                   game
-                                              where player.name = $1
-                                                and game.short_name = $2)`
-
-	qSetPlayerTasks := `insert into player_on_task (player_id, task_id)
-    (select p.player_id, task_id
-     from player p
-              join player_game pg on p.player_id = pg.player_id
-              join task t on pg.game_id = t.game_id
-    join game g on pg.game_id = g.game_id
-     where p.name = $1
-       and g.short_name = $2
-     order by t.task_id
-     limit 1)`
+	qInitPlayerOnGame := `insert into player_game (player_id, game_id, task_id)
+    (select player_id,
+            game_id,
+            (select task_id from task where game.game_id = task.game_id order by task_id)
+     from player,
+          game
+     where player.name = $1
+       and game.short_name = $2)`
 
 	var b []byte
 
@@ -63,12 +55,6 @@ returning json_build_object(
 	_, err = tx.ExecContext(ctx, qInitPlayerOnGame, playerName, gameShortName)
 	if err != nil {
 		fmt.Printf("%s: can't init player on game\n", err.Error())
-		return nil, err
-	}
-
-	_, err = tx.ExecContext(ctx, qSetPlayerTasks, playerName, gameShortName)
-	if err != nil {
-		fmt.Printf("%s: can't set new player tasks\n", err.Error())
 		return nil, err
 	}
 

@@ -23,10 +23,10 @@ type Task struct {
 func CompleteTask(ctx context.Context, db *sqlx.DB, playerName, gameSN string) error {
 	var err error
 
-	q := `update player_on_task
+	q := `update player_game
 set task_id = (select next_task
     from task
-             join player_on_task pot on task.task_id = pot.task_id
+             join player_game pot on task.task_id = pot.task_id
              join game g on g.game_id = task.game_id
     join player p on pot.player_id = p.player_id
     where g.short_name = $1 and  p.name = $2 limit 1
@@ -53,7 +53,7 @@ func NewTaskBatch(ctx context.Context, db *sqlx.DB, gameSN string, tasks []Task)
 
 	q := "insert into task (game_id, title, description, coord_x, coord_y) values ($1,$2,$3,$4,$5) returning task_id"
 
-	for i := len(tasks) - 1; i >= 0; i++ {
+	for i := len(tasks) - 1; i >= 0; i-- {
 		var tid int
 		err = db.GetContext(ctx, &tid, q, gid, tasks[i].Title, tasks[i].Description, tasks[i].Coords.X, tasks[i].Coords.Y)
 		if err != nil {

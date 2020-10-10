@@ -92,15 +92,16 @@ func GameInfo(ctx context.Context, db *sqlx.DB, shortName string) (interface{}, 
                                              'coords', json_build_object('x', task.coord_x, 'y', task.coord_y)
                                          )
                               from task
-                                       join game g on g.game_id = task.game_id),
+                                       join game g on g.game_id = task.game_id
+                              where g.short_name = $1),
                'players', array(select json_build_object(
                                                'id', p.player_id,
                                                'name', p.name,
-                                               'task_id', t.task_id
+                                               'task_id', pg.task_id
                                            )
                                 from player p
-                                         left join player_on_task pot on p.player_id = pot.player_id
-                                         left join task t on t.task_id = pot.task_id
+                                         join player_game pg on p.player_id = pg.player_id
+                                where pg.game_id = (select game_id from game where game.short_name = $1)
                    )
            )
 from game

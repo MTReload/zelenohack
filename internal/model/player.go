@@ -19,7 +19,7 @@ func NewPlayer(ctx context.Context, db *sqlx.DB, playerName, gameShortName strin
 	var err error
 	qNewPlayer := `insert into player (name)
 values ($1)
-on conflict DO NOTHING
+on conflict (name) DO UPDATE SET name = $1
 returning json_build_object(
         'player_id', player_id,
         'name', name
@@ -28,7 +28,7 @@ returning json_build_object(
 	qInitPlayerOnGame := `insert into player_game (player_id, game_id, task_id)
     (select player_id,
             game_id,
-            (select task_id from task where game.game_id = task.game_id order by task_id)
+            (select task_id from task where game.game_id = task.game_id order by task_id desc limit 1)
      from player,
           game
      where player.name = $1
@@ -40,8 +40,11 @@ returning json_build_object(
 
 	err = db.QueryRowxContext(ctx, qNewPlayer, playerName).Scan(&b)
 	if err != nil {
-		fmt.Printf("%s: can't add new player\n", err.Error())
-		return nil, err
+		if err != sql.ErrNoRows {
+			fmt.Printf("%s: can't add new player\n", err.Error())
+			return nil, err
+		}
+
 	}
 
 	err = json.Unmarshal(b, &ret)

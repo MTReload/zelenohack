@@ -105,11 +105,6 @@ func GameInfo(ctx context.Context, db *sqlx.DB, shortName string) (interface{}, 
                    )
            )
 from game
---          full outer join player_game pg on game.game_id = pg.game_id
---          full outer join player p on p.player_id = pg.player_id
---          full outer join task task_all on game.game_id = task_all.game_id
---          full outer join player_on_task pot on pot.player_id = p.player_id
---          full outer join task t on t.task_id = pot.task_id
 where game.short_name = $1`
 
 	var ret interface{}
@@ -146,12 +141,11 @@ func GetGameInfoForPlayer(ctx context.Context, db *sqlx.DB, gameSN, playerName s
                                          )
                               from task
                                        join game g on g.game_id = task.game_id),
-               'now_on', pot.task_id
+               'now_on', pg.task_id
            )
 from game
          join player_game pg on game.game_id = pg.game_id
          join player p on p.player_id = pg.player_id
-         join player_on_task pot on p.player_id = pot.player_id
 where game.short_name = $1
   and p.name = $2`
 

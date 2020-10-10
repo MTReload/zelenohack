@@ -133,18 +133,18 @@ func GetGameInfoForPlayer(ctx context.Context, db *sqlx.DB, gameSN, playerName s
                'game', json_build_object('id', game.game_id, 'name', game.name, 'short_name', game.short_name),
                'tasks', array(select json_build_object(
                                              'id', task_id,
-                                             'title', task.title,
-                                             'description', task.description,
-                                             'next_task', task.next_task,
-                                             'coords', json_build_object('x', task.coord_x, 'y', task.coord_y)
+                                             'title', t.title,
+                                             'description', t.description,
+                                             'next_task', t.next_task,
+                                             'coords', json_build_object('x', t.coord_x, 'y', t.coord_y)
                                          )
-                              from task
-                                       join game g on g.game_id = task.game_id),
+                ),
                'now_on', pg.task_id
            )
 from game
          join player_game pg on game.game_id = pg.game_id
          join player p on p.player_id = pg.player_id
+		join task t on game.game_id = t.game_id
 where game.short_name = $1
   and p.name = $2`
 

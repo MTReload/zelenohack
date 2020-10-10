@@ -47,6 +47,7 @@ func main() {
 		// also creates new player
 		r.Get("/game/{gameSN}/info/{playerName}", s.GetPersonalGameInfo)
 
+		r.Post("/game/{gameSN}/player/{playerName}/task/complete", s.CompleteTask)
 		// r.Post("/player/{gameSN}")
 	})
 

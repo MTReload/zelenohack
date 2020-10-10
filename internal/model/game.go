@@ -2,6 +2,7 @@ package model
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 
@@ -52,6 +53,9 @@ where short_name = $1`
 
 	err = db.QueryRowxContext(ctx, q, shortName).Scan(&b)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
 		fmt.Printf("%s: can't get game %s\n", err.Error(), shortName)
 		return nil, err
 	}
@@ -102,6 +106,9 @@ where game.short_name = $1`
 
 	err = db.GetContext(ctx, &b, q, shortName)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
 		log.WithError(err).Error("can't get full game info")
 		return nil, err
 	}
@@ -142,6 +149,9 @@ where game.short_name = $1
 
 	err = db.GetContext(ctx, &b, q, gameSN, playerName)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
 		log.WithError(err).Error("can't get personal game info")
 		return nil, err
 	}

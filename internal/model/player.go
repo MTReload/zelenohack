@@ -2,6 +2,7 @@ package model
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
@@ -44,6 +45,9 @@ where name = $1`
 	var ret Player
 	err = db.QueryRowxContext(ctx, q, name).Scan(&ret)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
 		fmt.Printf("%s: can't get player %s\n", err.Error(), name)
 		return nil, err
 	}

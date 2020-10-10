@@ -50,5 +50,7 @@ func main() {
 		// r.Post("/player/{gameSN}")
 	})
 
+	log.Info("running server...")
 	log.Fatal(http.ListenAndServe(cfg.ListenAddr, r))
+	log.Info("..stop")
 }

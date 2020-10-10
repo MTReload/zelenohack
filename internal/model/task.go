@@ -51,11 +51,19 @@ func NewTaskBatch(ctx context.Context, db *sqlx.DB, gameSN string, tasks []Task)
 		return err
 	}
 
-	q := "insert into task (game_id, title, description, coord_x, coord_y) values ($1,$2,$3,$4,$5) returning task_id"
+	q := "insert into task (game_id, title, description, coord_x, coord_y, next_task) values ($1,$2,$3,$4,$5,$6) returning task_id"
 
-	for i := len(tasks) - 1; i >= 0; i-- {
-		var tid int
-		err = db.GetContext(ctx, &tid, q, gid, tasks[i].Title, tasks[i].Description, tasks[i].Coords.X, tasks[i].Coords.Y)
+	i := len(tasks) - 1
+	var tid int
+
+	err = db.GetContext(ctx, &tid,
+		"insert into task (game_id, title, description, coord_x, coord_y) values ($1,$2,$3,$4,$5) returning task_id", gid, tasks[i].Title, tasks[i].Description, tasks[i].Coords.X, tasks[i].Coords.Y)
+	if err != nil {
+		log.WithError(err).Error("task batch")
+		return err
+	}
+	for i := len(tasks) - 2; i >= 0; i-- {
+		err = db.GetContext(ctx, &tid, q, gid, tasks[i].Title, tasks[i].Description, tasks[i].Coords.X, tasks[i].Coords.Y, tid)
 		if err != nil {
 			log.WithError(err).Error("task batch")
 			return err

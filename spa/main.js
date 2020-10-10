@@ -6,22 +6,50 @@ var app = new Vue({
             current_game: null,
             tasks: [],
             current_task_idx: -1,
+            gameSN: '',
+            editMode: false,
+            adminMode: false,
+            game_name: '',
+            game_description: ''
         };
-    },
-    created() {
-        axios
-            .get('https://mtreload.ru/api/game/abcde/info')
-            .then(response => (this.current_game = response.data));
     },
     computed: {}
 
 })
 
-
 Vue.component('task-item', {
-    props: ['task'],
-    template: '<span>Title: {{ task.title }} x: {{ task.coords.x}} y: {{ task.coords.y}}</span>>'
+    props: ['task', 'idx'],
+    methods: {
+        onClick: function () {
+            changeActiveTask(this.idx);
+        },
+    },
+    template: `
+<li>
+    <div style="height: 20px">Title: {{ task.title }} x: {{ task.coords.x}} y: {{ task.coords.y}}</div>
+</li>
+`
 })
+
+Vue.component('task-item-editable', {
+    props: ['task', 'idx'],
+    methods: {
+        onClick: function () {
+            changeActiveTask(this.idx);
+        },
+        remove: function () {
+            removeTask(this.task.idx)
+        }
+    },
+    computed: {},
+    template: `
+<li>
+    <div style="height: 20px" v-on:click="onClick">Title: {{ task.title }} x: {{ task.coords.x}} y: {{ task.coords.y}}</div>
+    <button v-on:click="this.remove">X</button>
+</li>
+`
+})
+
 
 Vue.component('player-item', {
     props: ['player', 'tasks'],
@@ -42,16 +70,26 @@ Vue.component('player-item', {
 </li>`
 })
 
+
 addTask = function (task) {
     app.tasks.push(task)
+    app.current_task_idx = app.tasks.length
 }
 
 changeTask = function (idx, task) {
     app.set(app.tasks, idx, task)
 }
 
-removeTask = function () {
+changeActiveTask = function (idx) {
+    app.current_task_idx = idx
+}
+
+removeTask = function (idx) {
+    app.tasks.splice(app.tasks, idx)
+}
+removeLastTask = function () {
     app.tasks.pop()
+    app.current_task_idx = app.tasks.length
 }
 
 function setUpClickListener(map) {
@@ -60,9 +98,46 @@ function setUpClickListener(map) {
     map.addEventListener('tap', function (evt) {
         var coord = map.screenToGeo(evt.currentPointer.viewportX,
             evt.currentPointer.viewportY);
-        logEvent('Clicked at ' + Math.abs(coord.lat.toFixed(4)) +
-            ((coord.lat > 0) ? 'N' : 'S') +
-            ' ' + Math.abs(coord.lng.toFixed(4)) +
-            ((coord.lng > 0) ? 'E' : 'W'));
+        let x = Math.abs(coord.lat.toFixed(8));
+        let y = Math.abs(coord.lng.toFixed(8));
+        let tsk = {title: "a", coords: {x: x, y: y}}
+        addTask(tsk)
+
     });
+}
+
+setUpClickListener(map);
+
+
+createGame = function () {
+    axios.post('http://localhost:8080/api/game', {
+        name: app.game_name,
+        description: app.game_description
+    }).then(function (response) {
+        app.gameSN = response.data.short_name;
+        console.log(response);
+        app.editMode = true
+        app.adminMode = false
+    }).catch(function (error) {
+        console.log(error)
+    })
+}
+
+adminMode = function () {
+    axios.get('http://localhost:8080/api/game/' + app.gameSN + '/info')
+        .then(function (response) {
+            app.current_game = response.data;
+            app.game_description = app.current_game.game.description
+            app.game_name = app.current_game.game.name
+            app.adminMode = true;
+            app.editMode = false;
+            console.log(response);
+        })
+        .catch(function (error) {
+            // handle error
+            console.log(error);
+        })
+        .then(function () {
+            // always executed
+        });
 }

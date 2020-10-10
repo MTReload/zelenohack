@@ -11,12 +11,81 @@
     <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-ui.js"></script>
     <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
     <script src='https://developer.here.com/javascript/src/iframeheight.js'></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
 
     <title>Квест-Карта</title>
 </head>
 <body>
 
-<div style="width: 640px; height: 480px" id="map"></div>
+<div class="container-sm">
+    <div class="row mt-5">
+        <div style="width: 640px; height: 480px" id="map" class="col-8"></div>
+        <div id="app" class="col-4">
+            <div v-if="editMode || adminMode">
+                <h1>Code: {{ gameSN }}</h1>
+                <h2>Name: {{ game_name}}</h2>
+                <h4>{{ game_description}}</h4>
+            </div>
+
+            <div v-if="editMode">
+                <player-item
+                        v-for="player in current_game.players"
+                        v-bind:tasks="current_game.tasks"
+                        v-bind:player="player"
+                        v-bind:key="player.id"
+                ></player-item>
+
+                <task-item
+                        v-for="task in current_game.tasks"
+                        v-bind:task="task"
+                        v-bind:key="task.id"
+                ></task-item>
+
+                <div>
+                    <task-item-editable
+                            v-for="(task,idx) in tasks"
+                            v-bind:task="task"
+                            v-bind:tdx="idx"
+                            v-bind:key="idx"
+                            v-on:click="">
+                    </task-item-editable>
+                </div>
+                <button onclick="removeLastTask()">drop last</button>
+
+            </div>
+
+            <div v-if="adminMode">
+                <player-item
+                        v-for="player in current_game.players"
+                        v-bind:tasks="current_game.tasks"
+                        v-bind:player="player"
+                        v-bind:key="player.id"
+                ></player-item>
+
+                <task-item
+                        v-for="task in current_game.tasks"
+                        v-bind:task="task"
+                        v-bind:key="task.id"
+                ></task-item>
+
+            </div>
+            <div v-if="!adminMode && !editMode">
+                <input v-model="game_name" placeholder="name">
+                <input v-model="game_description" placeholder="description">
+                <button onclick="createGame()">Создать игру</button>
+
+                <button onclick="adminMode()">Admin</button>
+                <input v-model="gameSN" placeholder="code">
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
 <script>
     /**
      * Moves the map to display over Berlin
@@ -76,34 +145,6 @@
     }
 
 </script>
-<div id="app">
-
-    {{ message }}
-    <player-item
-            v-for="player in current_game.players"
-            v-bind:tasks="current_game.tasks"
-            v-bind:player="player"
-            v-bind:key="player.id"
-    ></player-item>
-
-    <task-item
-            v-for="task in current_game.tasks"
-            v-bind:task="task"
-            v-bind:key="task.id"
-    ></task-item>
-
-    <div>
-        AAAAAAA
-        <task-item
-                v-for="task in tasks">
-            v-bind:task="task"
-        </task-item>
-    </div>
-
-
-</div>
-
-
 </body>
 <script src="main.js"></script>
 </html>

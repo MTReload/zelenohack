@@ -26,7 +26,7 @@ set task_id = (select next_task
     where g.short_name = $1 and  p.name = $2 limit 1
 ) where player_id = (select player_id from player where name=$2)`
 
-	_, err = db.ExecContext(ctx, q)
+	_, err = db.ExecContext(ctx, q, gameSN, playerName)
 	if err != nil {
 		log.WithError(err).Errorf("can't complete task for %s player in game %s", playerName, gameSN)
 		return err

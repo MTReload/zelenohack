@@ -15,7 +15,7 @@
           integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 
 
-    <title>Квест-Карта</title>
+    <title>Ramni</title>
 </head>
 <body>
 
@@ -68,12 +68,13 @@
 
             </div>
             <div v-if="!adminMode && !editMode">
-                <input v-model="game_name" placeholder="name">
-                <input v-model="game_description" placeholder="description">
+              <input class="form-control" v-model="game_name" placeholder="name">
+              <input class="form-control" v-model="game_description" placeholder="description">
+              <div class="btn-group d-flex">
                 <button onclick="createGame()">Создать игру</button>
-
                 <button onclick="adminMode()">Admin</button>
-                <input v-model="gameSN" placeholder="code">
+              </div>
+              <input class="form-control" v-model="gameSN" placeholder="code">
             </div>
 
 

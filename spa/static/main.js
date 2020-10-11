@@ -79,13 +79,7 @@ Vue.component('player-item', {
 
             }
         }
-    },
-<<<<<<< Updated upstream
-    template: `<div><h6>{{ player.name }}</h6> <task-item v-bind:task="getTask"></task-item></div>
-
-</div>`
-=======
-    template: `
+    }, template: `
 <div class="card">
     <div class="card-body">
         <h5 class="card-title">{{ player.name }}</h5>
@@ -93,7 +87,6 @@ Vue.component('player-item', {
     </div>
 </div>
 `
->>>>>>> Stashed changes
 })
 
 

@@ -92,7 +92,7 @@ func GameInfo(ctx context.Context, db *sqlx.DB, shortName string) (interface{}, 
                                          )
                               from task
                                        join game g on g.game_id = task.game_id
-                              where g.short_name = $1 order by task.task_id),
+                              where g.short_name = $1 order by task.task_id desc),
                'players', array(select json_build_object(
                                                'id', p.player_id,
                                                'name', p.name,

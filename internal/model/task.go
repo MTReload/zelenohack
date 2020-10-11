@@ -2,6 +2,7 @@ package model
 
 import (
 	"context"
+	"errors"
 
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
@@ -52,6 +53,10 @@ func NewTaskBatch(ctx context.Context, db *sqlx.DB, gameSN string, tasks []Task)
 	}
 
 	q := "insert into task (game_id, title, description, coord_x, coord_y, next_task) values ($1,$2,$3,$4,$5,$6) returning task_id"
+
+	if len(tasks) == 0 {
+		return errors.New("no tasks")
+	}
 
 	i := len(tasks) - 1
 	var tid int

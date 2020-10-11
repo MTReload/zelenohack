@@ -99,26 +99,28 @@ removeTask = function (idx) {
 removeLastTask = function () {
     app.tasks.pop()
     app.current_task_idx = app.tasks.length
+    group.tasks.pop()
+}
+var feft = function (evt) {
+    var coord = map.screenToGeo(evt.currentPointer.viewportX,
+        evt.currentPointer.viewportY);
+    let x = Math.abs(coord.lat.toFixed(8));
+    let y = Math.abs(coord.lng.toFixed(8));
+    var tsk = {title: "", coords: {x: x, y: y}}
+
+    tsk.html = function () {
+        return `<h6>${tsk.title}</h6>: <p>${tsk.description}</p>`
+    }
+
+    addTask(tsk)
+
+    addInfoBubble(map, x, y, tsk)
 }
 
 function setUpClickListener(map) {
     // Attach an event listener to map display
     // obtain the coordinates and display in an alert box.
-    map.addEventListener('tap', function (evt) {
-        var coord = map.screenToGeo(evt.currentPointer.viewportX,
-            evt.currentPointer.viewportY);
-        let x = Math.abs(coord.lat.toFixed(8));
-        let y = Math.abs(coord.lng.toFixed(8));
-        var tsk = {title: "a", coords: {x: x, y: y}}
-
-        tsk.html = function () {
-            `<task-item v-bind:task="tsk"></task-item>`
-        }
-
-        addTask(tsk)
-
-        addInfoBubble(map, x, y, tsk)
-    });
+    map.addEventListener('tap', feft);
 }
 
 setUpClickListener(map);
@@ -146,6 +148,13 @@ adminMode = function () {
             app.game_name = app.current_game.game.name
             app.adminMode = true;
             app.editMode = false;
+            map.removeEventListener('tap', feft)
+
+            for (let i = 0; i< app.current_game.tasks.length; i++){
+                var t = app.current_game.tasks[i]
+                addInfoBubble(map, t.coords.x, t.coords.y, t)
+            }
+
             console.log(response);
         })
         .catch(function (error) {
@@ -191,4 +200,3 @@ function addInfoBubble(map, lat, lng, data) {
 
 }
 
-addInfoBubble(map);

@@ -25,7 +25,13 @@ Vue.component('task-item', {
             changeActiveTask(this.idx);
         },
     },
-    template: `<div style="height: 20px">Title: {{ task.title }}</div>`
+    template: `
+<li class="list-group-item">
+    <h3 class="card-text">Title: {{ task.title }}</h3>
+    <p class="card-text">x: {{ task.coords.x }} y: {{ task.coords.y }}</p>
+    <p class="card-text">{{ task.description }}</p>
+</li>
+`
 })
 
 Vue.component('task-item-editable', {
@@ -74,9 +80,20 @@ Vue.component('player-item', {
             }
         }
     },
+<<<<<<< Updated upstream
     template: `<div><h6>{{ player.name }}</h6> <task-item v-bind:task="getTask"></task-item></div>
 
 </div>`
+=======
+    template: `
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">{{ player.name }}</h5>
+        <task-item v-bind:task="getTask"></task-item>
+    </div>
+</div>
+`
+>>>>>>> Stashed changes
 })
 
 

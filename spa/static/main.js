@@ -160,30 +160,38 @@ createGame = function () {
     })
 }
 
+
+
 adminMode = function () {
-    axios.get('https://mtreload.ru/api/game/' + app.gameSN + '/info')
-        .then(function (response) {
-            app.current_game = response.data;
-            app.game_description = app.current_game.game.description
-            app.game_name = app.current_game.game.name
-            app.adminMode = true;
-            app.editMode = false;
-            map.removeEventListener('tap', feft)
+    if (app.adminMode){
+        return
+    }
+    window.setInterval(function(){
+        axios.get('https://mtreload.ru/api/game/' + app.gameSN + '/info')
+            .then(function (response) {
+                app.current_game = response.data;
+                app.game_description = app.current_game.game.description
+                app.game_name = app.current_game.game.name
+                app.adminMode = true;
+                app.editMode = false;
+                map.removeEventListener('tap', feft)
 
-            for (let i = 0; i < app.current_game.tasks.length; i++) {
-                var t = app.current_game.tasks[i]
-                addInfoBubble(map, t.coords.x, t.coords.y, t)
-            }
+                for (let i = 0; i < app.current_game.tasks.length; i++) {
+                    var t = app.current_game.tasks[i]
+                    addInfoBubble(map, t.coords.x, t.coords.y, t)
+                }
 
-            console.log(response);
-        })
-        .catch(function (error) {
-            // handle error
-            console.log(error);
-        })
-        .then(function () {
-            // always executed
-        });
+                console.log(response);
+            })
+            .catch(function (error) {
+                // handle error
+                console.log(error);
+            })
+            .then(function () {
+                // always executed
+            });
+    }, 5000);
+
 }
 
 startQuest = function () {

@@ -130,23 +130,23 @@ func GetGameInfoForPlayer(ctx context.Context, db *sqlx.DB, gameSN, playerName s
 	var err error
 
 	q := `select json_build_object(
-        'game', json_build_object('id', game.game_id, 'name', game.name, 'short_name', game.short_name),
-        'tasks', array(select json_build_object(
-                                      'id', t.task_id,
-                                      'title', t.title,
-                                      'description', t.description,
-                                      'next_task', t.next_task,
-                                      'coords', json_build_object('x', t.coord_x, 'y', t.coord_y)
-                                  )
-                       from task t where game.game_id = t.game_id
-            ),
-        'now_on', pg.task_id
-    )
-from game
-         join player_game pg on game.game_id = pg.game_id
-         join player p on p.player_id = pg.player_id
-where game.short_name = $1
-  and p.name = $2`
+			'game', json_build_object('id', game.game_id, 'name', game.name, 'short_name', game.short_name),
+			'tasks', array(select json_build_object(
+										  'id', t.task_id,
+										  'title', t.title,
+										  'description', t.description,
+										  'next_task', t.next_task,
+										  'coords', json_build_object('x', t.coord_x, 'y', t.coord_y)
+									  )
+						   from task t where game.game_id = t.game_id order by t.task_id desc
+				),
+			'now_on', pg.task_id
+		)
+	from game
+			 join player_game pg on game.game_id = pg.game_id
+			 join player p on p.player_id = pg.player_id
+	where game.short_name = $1
+	  and p.name = $2`
 
 	var ret interface{}
 	var b []byte

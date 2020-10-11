@@ -78,11 +78,9 @@ Vue.component('player-item', {
             }
         }
     },
-    template: `<li>{{ player.name }} |
+    template: `<div><h3>{{ player.name }}</h3> <task-item v-bind:task="getTask"></task-item></div>
 
-    <task-item v-bind:task="getTask"></task-item>
-
-</li>`
+</div>`
 })
 
 
@@ -156,7 +154,7 @@ adminMode = function () {
             app.editMode = false;
             map.removeEventListener('tap', feft)
 
-            for (let i = 0; i< app.current_game.tasks.length; i++){
+            for (let i = 0; i < app.current_game.tasks.length; i++) {
                 var t = app.current_game.tasks[i]
                 addInfoBubble(map, t.coords.x, t.coords.y, t)
             }

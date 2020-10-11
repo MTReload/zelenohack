@@ -51,10 +51,16 @@ Vue.component('task-item-editable', {
     computed: {},
     template: `
 <li>
-    <div style="height: 20px" v-on:click="onClick">Title: {{ task.title }} x: {{ task.coords.x}} y: {{ task.coords.y}}</div>
-    <input v-model="task.title" placeholder="title">
-    <input v-model="task.description" placeholder="description">
-    <button v-on:click="this.remove">X</button>
+    <div style="height: 20px" v-on:click="onClick">Title: {{ task.title }} x: {{ task.coords.x }} y: {{ task.coords.y }}</div>
+    <div class="row">
+        <div class="col-10 pr-0">
+            <input class="form-control" v-model="task.title" placeholder="title">
+            <input class="form-control" v-model="task.description" placeholder="description">
+        </div>
+        <div class="col-2 pl-0">
+            <button class="btn btn-danger" v-on:click="this.remove">X</button>
+        </div>
+    </div>
 </li>
 `
 })
@@ -73,7 +79,7 @@ Vue.component('player-item', {
         }
     },
     template: `<li>{{ player.name }} |
-    
+
     <task-item v-bind:task="getTask"></task-item>
 
 </li>`
@@ -199,4 +205,3 @@ function addInfoBubble(map, lat, lng, data) {
     addMarkerToGroup(group, {lat: lat, lng: lng}, data);
 
 }
-

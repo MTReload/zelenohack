@@ -28,9 +28,19 @@ Vue.component('task-item', {
     template: `
 <li class="list-group-item">
     <h3 class="card-text">Title: {{ task.title }}</h3>
-    <p class="card-text">x: {{ task.coords.x }} y: {{ task.coords.y }}</p>
     <p class="card-text">{{ task.description }}</p>
 </li>
+`
+})
+Vue.component('task-item-player', {
+    props: ['task', 'idx'],
+    methods: {
+        onClick: function () {
+            changeActiveTask(this.idx);
+        },
+    },
+    template: `
+    <h3 class="card-text">Сейчас на <b>{{ task.title }}</b></h3>
 `
 })
 
@@ -83,7 +93,7 @@ Vue.component('player-item', {
 <div class="card">
     <div class="card-body">
         <h5 class="card-title">{{ player.name }}</h5>
-        <task-item v-bind:task="getTask"></task-item>
+        <task-item-player v-bind:task="getTask"></task-item-player>
     </div>
 </div>
 `

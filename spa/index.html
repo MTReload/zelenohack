@@ -62,11 +62,15 @@
                         v-bind:key="player.id"
                 ></player-item>
 
-                <task-item
-                        v-for="task in current_game.tasks"
-                        v-bind:task="task"
-                        v-bind:key="task.id"
-                ></task-item>
+                <div class="card">
+                  <ul class="list-group list-group-flush">
+                    <task-item
+                            v-for="task in current_game.tasks"
+                            v-bind:task="task"
+                            v-bind:key="task.id"
+                    ></task-item>
+                  </ul>
+                </div>
 
             </div>
             <div v-if="!adminMode && !editMode">

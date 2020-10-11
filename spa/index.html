@@ -12,7 +12,9 @@
     <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
     <script src='https://developer.here.com/javascript/src/iframeheight.js'></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous"/>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+            integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 
 
     <title>Ramni</title>
@@ -26,8 +28,8 @@
         <div  class="col-4" id="app">
             <div v-if="editMode || adminMode">
                 <h1>Code: {{ gameSN }}</h1>
-                <h2>Name: {{ game_name}}</h2>
-                <h4>{{ game_description}}</h4>
+                <h2>Name: {{ game_name }}</h2>
+                <h4>{{ game_description }}</h4>
             </div>
 
             <div v-if="editMode">
@@ -55,13 +57,25 @@
             </div>
 
             <div v-if="adminMode">
+
+              <div class="btn-group d-flex">
+                <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#players" aria-expanded="false" aria-controls="players">
+                  Игроки
+                </button>
+                <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#tasks" aria-expanded="false" aria-controls="tasks">
+                  Точки
+                </button>
+              </div>
+
+              <div class="collapse" id="players">
                 <player-item
                         v-for="player in current_game.players"
                         v-bind:tasks="current_game.tasks"
                         v-bind:player="player"
                         v-bind:key="player.id"
                 ></player-item>
-
+              </div>
+              <div class="collapse" id="tasks">
                 <div class="card">
                   <ul class="list-group list-group-flush">
                     <task-item
@@ -71,6 +85,7 @@
                     ></task-item>
                   </ul>
                 </div>
+              </div>
 
             </div>
             <div v-if="!adminMode && !editMode">

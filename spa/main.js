@@ -127,7 +127,7 @@ setUpClickListener(map);
 
 
 createGame = function () {
-    axios.post('http://localhost:8080/api/game', {
+    axios.post('https://mtreload.ru/api/game', {
         name: app.game_name,
         description: app.game_description
     }).then(function (response) {
@@ -141,7 +141,7 @@ createGame = function () {
 }
 
 adminMode = function () {
-    axios.get('http://localhost:8080/api/game/' + app.gameSN + '/info')
+    axios.get('https://mtreload.ru/api/game/' + app.gameSN + '/info')
         .then(function (response) {
             app.current_game = response.data;
             app.game_description = app.current_game.game.description
@@ -167,7 +167,7 @@ adminMode = function () {
 }
 
 startQuest = function () {
-    axios.post('http://localhost:8080/api/game/' + app.gameSN + '/tasks', {
+    axios.post('https://mtreload.ru/api/game/' + app.gameSN + '/tasks', {
         tasks: app.tasks
     }).then(function (response) {
         adminMode()

@@ -25,11 +25,7 @@ Vue.component('task-item', {
             changeActiveTask(this.idx);
         },
     },
-    template: `
-<li>
-    <div style="height: 20px">Title: {{ task.title }} x: {{ task.coords.x}} y: {{ task.coords.y}}</div>
-</li>
-`
+    template: `<div style="height: 20px">Title: {{ task.title }}</div>`
 })
 
 Vue.component('task-item-editable', {
@@ -78,7 +74,7 @@ Vue.component('player-item', {
             }
         }
     },
-    template: `<div><h3>{{ player.name }}</h3> <task-item v-bind:task="getTask"></task-item></div>
+    template: `<div><h6>{{ player.name }}</h6> <task-item v-bind:task="getTask"></task-item></div>
 
 </div>`
 })
